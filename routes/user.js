@@ -36,9 +36,8 @@ router.post('/login', async (req, res) => {
     if (user) {
         const isPasswordCorrect = await bcrypt.compare(req.body.password, user.password)
         if (isPasswordCorrect) {
-            //req.session.currentUser = user
-            console.log(req.session)
-            res.redirect('/')
+            req.session.currentUser = user
+            res.redirect('/main')
         } else {
             res.redirect('/user/login')
         }
