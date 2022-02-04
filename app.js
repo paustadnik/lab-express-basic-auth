@@ -14,6 +14,10 @@ const express = require('express');
 const hbs = require('hbs');
 
 const app = express();
+const session = require('express-session')
+const store = require('connect-mongo')
+
+const userRouter = require('./routes/user')
 
 // ℹ️ This function is getting exported from the config folder. It runs most middlewares
 require('./config')(app);
@@ -27,6 +31,23 @@ app.locals.title = `${capitalized(projectName)}- Generated with Ironlauncher`;
 // 👇 Start handling routes here
 const index = require('./routes/index');
 app.use('/', index);
+
+// user routes
+app.use('/user', userRouter)
+
+// espress session
+app.use(session({
+    secret: 'hello',
+    resave: true, 
+    saveUninitialized: true,
+    cookie: {
+        httpOnly: true,
+        maxAge: 60000,
+    },
+    store: store.create({
+        mongoUrl: 'mongodb://localhost/lab-express-basic-auth'
+    })
+}))
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require('./error-handling')(app);
